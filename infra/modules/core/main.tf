@@ -1,11 +1,11 @@
 ﻿resource "azurerm_resource_group" "rg" {
-  name     = "rg-${var.prefix}-${var.env}"     # e.g., rg-azurewebapp-dev
+  name     = "rg-${var.prefix}-${var.env}"     
   location = var.location
   tags     = var.tags
 }
 
 resource "azurerm_log_analytics_workspace" "law" {
-  name                = "law-${var.prefix}-${var.env}"  # e.g., law-azurewebapp-dev
+  name                = "law-${var.prefix}-${var.env}"  
   location            = var.location
   resource_group_name = azurerm_resource_group.rg.name
   sku                 = "PerGB2018"
@@ -14,7 +14,7 @@ resource "azurerm_log_analytics_workspace" "law" {
 }
 
 resource "azurerm_application_insights" "appi" {
-  name                = "appi-${var.prefix}-${var.env}" # e.g., appi-azurewebapp-dev
+  name                = "appi-${var.prefix}-${var.env}" 
   location            = var.location
   resource_group_name = azurerm_resource_group.rg.name
   application_type    = "web"
