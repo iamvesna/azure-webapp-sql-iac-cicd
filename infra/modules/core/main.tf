@@ -1,0 +1,26 @@
+﻿resource "azurerm_resource_group" "rg" {
+  name     = "rg-${var.prefix}-${var.env}"     # e.g., rg-azurewebapp-dev
+  location = var.location
+  tags     = var.tags
+}
+
+resource "azurerm_log_analytics_workspace" "law" {
+  name                = "law-${var.prefix}-${var.env}"  # e.g., law-azurewebapp-dev
+  location            = var.location
+  resource_group_name = azurerm_resource_group.rg.name
+  sku                 = "PerGB2018"
+  retention_in_days   = 30
+  tags                = var.tags
+}
+
+resource "azurerm_application_insights" "appi" {
+  name                = "appi-${var.prefix}-${var.env}" # e.g., appi-azurewebapp-dev
+  location            = var.location
+  resource_group_name = azurerm_resource_group.rg.name
+  application_type    = "web"
+  workspace_id        = azurerm_log_analytics_workspace.law.id
+  tags                = var.tags
+}
+
+output "rg_name"   { value = azurerm_resource_group.rg.name }
+output "appi_cstr" { value = azurerm_application_insights.appi.connection_string }
