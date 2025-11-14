@@ -1,4 +1,4 @@
-﻿module "core" {
+module "core" {
   source   = "./modules/core"
   prefix   = var.prefix
   env      = var.env
@@ -16,6 +16,6 @@ module "app" {
   appi_cstr = module.core.appi_cstr
 }
 
-output "resource_group"       { value = module.core.rg_name }
-output "app_name"             { value = module.app.app_name }
+output "resource_group" { value = module.core.rg_name }
+output "app_name" { value = module.app.app_name }
 output "app_default_hostname" { value = module.app.app_default_hostname }

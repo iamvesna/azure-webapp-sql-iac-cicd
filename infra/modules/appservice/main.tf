@@ -1,9 +1,9 @@
-resource "azurerm_service_plan" "plan" {
+﻿resource "azurerm_service_plan" "plan" {
   name                = "plan-${var.prefix}-${var.env}"
   location            = var.location
   resource_group_name = var.rg_name
   os_type             = "Linux"
-  sku_name            = "P0v3" # small, production-like; can use B1 to be cheaper
+  sku_name            = "P0v3"  # small, production-like; can use B1 to be cheaper
   tags                = var.tags
 }
 
@@ -13,11 +13,15 @@ resource "azurerm_linux_web_app" "app" {
   resource_group_name = var.rg_name
   service_plan_id     = azurerm_service_plan.plan.id
 
-  identity { type = "SystemAssigned" } # for future: managed identity
+  identity { type = "SystemAssigned" }  # for future: managed identity
 
   site_config {
-    application_stack { node_version = "20-lts" } # App Service runtime
-    health_check_path = "/healthz"                # used for safe deploys
+    application_stack {
+      node_version = "20-lts"           # App Service runtime
+    }
+
+    health_check_path                  = "/healthz"  # used for safe deploys
+    health_check_eviction_time_in_min  = 2           # after 2 min unhealthy, remove instance
   }
 
   app_settings = {
@@ -33,7 +37,10 @@ resource "azurerm_linux_web_app_slot" "staging" {
   name           = "staging"
   app_service_id = azurerm_linux_web_app.app.id
 
-  site_config { health_check_path = "/healthz" }
+  site_config {
+    health_check_path                 = "/healthz"
+    health_check_eviction_time_in_min = 2
+  }
 
   app_settings = {
     "APPLICATIONINSIGHTS_CONNECTION_STRING" = var.appi_cstr
@@ -41,5 +48,10 @@ resource "azurerm_linux_web_app_slot" "staging" {
   }
 }
 
-output "app_name" { value = azurerm_linux_web_app.app.name }
-output "app_default_hostname" { value = azurerm_linux_web_app.app.default_hostname }
+output "app_name" {
+  value = azurerm_linux_web_app.app.name
+}
+
+output "app_default_hostname" {
+  value = azurerm_linux_web_app.app.default_hostname
+}
