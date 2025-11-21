@@ -1,55 +1,32 @@
 ﻿const http = require("http");
 const sql = require("mssql");
 
-// ================================
-// SQL Connection Test Endpoint
-// ================================
-async function dbTestHandler(res) {
-  try {
-    const pool = await sql.connect(process.env.DefaultConnection);
-    const result = await pool.request().query("SELECT 1 AS test");
-
-    res.writeHead(200, { "Content-Type": "application/json" });
-    res.end(JSON.stringify(result.recordset));
-  } catch (err) {
-    res.writeHead(500, { "Content-Type": "application/json" });
-    res.end(JSON.stringify({ error: err.message }));
-  }
-}
-
-// ============================
-// MAIN HTTP SERVER
-// ============================
-const server = http.createServer(async (req, res) => {
-  if (req.url === "/") {
-    res.writeHead(200, { "Content-Type": "text/plain" });
-    res.end("Hello from Azure App Service!");
-    return;
-  }
-
-  if (req.url === "/dbtest") {
-    return dbTestHandler(res);
-  }
-
-  // Default 404
-  res.writeHead(404, { "Content-Type": "text/plain" });
-  res.end("Not Found");
+// Create HTTP Server
+const server = http.createServer((req, res) => {
+  res.writeHead(200, { "Content-Type": "text/plain" });
+  res.end("Hello from Azure App Service + SQL!");
 });
 
-// ============================
-// START SERVER
-// ============================
-server.listen(process.env.PORT || 8080, () => {
-  console.log("✔ Server is running...");
-});
+server.listen(process.env.PORT || 8080);
 
-// ============================
-// Initial SQL connection test
-// ============================
+// SQL CONFIG – parses the connection string correctly
+const sqlConfig = {
+  connectionString: process.env.DefaultConnection,
+  options: {
+    encrypt: true,
+    trustServerCertificate: false
+  }
+};
+
 async function testDb() {
   try {
-    await sql.connect(process.env.DefaultConnection);
-    console.log("🎉 Connected to SQL Database successfully!");
+    console.log("Connecting to SQL...");
+    const pool = await sql.connect(sqlConfig);
+    console.log("✅ Connected to SQL Database!");
+
+    const result = await pool.request().query("SELECT GETDATE() AS currentTime");
+    console.log("🕒 SQL Response:", result.recordset);
+
   } catch (err) {
     console.error("❌ SQL Connection Failed:", err);
   }
