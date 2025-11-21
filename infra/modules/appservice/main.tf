@@ -3,7 +3,7 @@
   location            = var.location
   resource_group_name = var.rg_name
   os_type             = "Linux"
-  sku_name            = "P0v3"  # small, production-like; can use B1 to be cheaper
+  sku_name            = "S1"  # small, production-like; can use B1 to be cheaper
   tags                = var.tags
 }
 
@@ -16,6 +16,7 @@ resource "azurerm_linux_web_app" "app" {
   identity { type = "SystemAssigned" }  # for future: managed identity
 
   site_config {
+    always_on = false
     application_stack {
       node_version = "20-lts"           # App Service runtime
     }
