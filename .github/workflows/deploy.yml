@@ -34,3 +34,6 @@ jobs:
           app-name: app-azurewebapp-dev
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: app.zip
+          slot-name: production
+          connection-strings: |
+            DefaultConnection=${{ secrets.AZURE_SQL_CONNECTION_STRING }}
