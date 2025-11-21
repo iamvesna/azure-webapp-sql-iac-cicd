@@ -1,5 +1,12 @@
 ﻿# Terraform
 .terraform/
 *.tfstate
-*.tfstate.backup
+*.tfstate.*
 .terraform.lock.hcl
+
+# Sensitive files
+publishprofile.xml
+
+# Variable files
+*.tfvars
+*.tfvars.json
