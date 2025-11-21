@@ -45,6 +45,7 @@ resource "azurerm_linux_web_app_slot" "staging" {
   app_settings = {
     "APPLICATIONINSIGHTS_CONNECTION_STRING" = var.appi_cstr
     "WEBSITE_RUN_FROM_PACKAGE"              = "1"
+    "SQL_CONNECTION_STRING"                 = var.sql_connection_string
   }
 }
 
