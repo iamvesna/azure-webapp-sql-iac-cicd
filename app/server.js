@@ -1,41 +1,27 @@
 ﻿const http = require("http");
 const sql = require("mssql");
 
-const PORT = process.env.PORT || 8080;
+const server = http.createServer(async (req, res) => {
 
-// Create a simple HTTP server
-const server = http.createServer((req, res) => {
   res.writeHead(200, { "Content-Type": "text/plain" });
-  res.end("Hello from Azure App Service!");
-});
+  res.write("Hello from Azure App Service!\n\n");
 
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
-
-// SQL CONFIG
-const sqlConfig = {
-  connectionString: process.env.SQLCONNSTR_DefaultConnection,
-  options: {
-    encrypt: true
-  }
-};
-
-console.log("ENV READ:", process.env.SQLCONNSTR_DefaultConnection);
-
-async function testDb() {
   try {
-    console.log("Using connection:", sqlConfig.connectionString);
+    const connectionString = process.env.SQLCONNSTR_DefaultConnection;
 
-    const pool = await sql.connect(sqlConfig);
-    console.log("✅ Connected to SQL Database!");
+    if (!connectionString) {
+      res.end("❌ SQLCONNSTR_DefaultConnection NOT FOUND");
+      return;
+    }
 
-    const result = await pool.request().query("SELECT 1 AS TestValue");
-    console.log("Result:", result.recordset);
+    await sql.connect(connectionString);
+    res.end("✅ Connected to SQL Database!");
 
   } catch (err) {
-    console.error("❌ SQL Connection Failed:", err);
+    res.end("❌ SQL Connection Failed:\n" + err);
   }
-}
+});
 
-testDb();
+server.listen(process.env.PORT || 8080, () => {
+  console.log("Server is running...");
+});
