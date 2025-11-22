@@ -36,4 +36,4 @@ jobs:
           package: app.zip
           slot-name: production
           connection-strings: |
-            DefaultConnection=${{ secrets.AZURE_SQL_CONNECTION_STRING }}
+            DefaultConnection: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
