@@ -1,19 +1,22 @@
 ﻿const http = require("http");
 const sql = require("mssql");
 
-// SQL config uses environment variable from Azure
-const sqlConfig = {
-  connectionString: process.env.SQLCONNSTR_DefaultConnection,
-  options: {
-    encrypt: true
-  }
-};
-
 async function testDbQuery() {
   try {
-    const pool = await sql.connect(sqlConfig);
+    // Azure injects connection strings using this variable name pattern:
+    // SQLCONNSTR_<NAME>
+    const conn = process.env.SQLCONNSTR_DefaultConnection;
 
-    // Run a simple SQL query
+    if (!conn) {
+      return {
+        success: false,
+        message: "SQLCONNSTR_DefaultConnection NOT FOUND",
+        error: null
+      };
+    }
+
+    // mssql supports "sql.connect(connectionString)" directly
+    const pool = await sql.connect(conn);
     const result = await pool.request().query("SELECT TOP 1 name FROM sys.tables");
 
     return {
