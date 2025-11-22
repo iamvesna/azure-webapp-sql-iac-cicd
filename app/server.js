@@ -1,37 +1,45 @@
 ﻿const http = require("http");
 const sql = require("mssql");
 
-// Azure automatically injects SQL connection string into:
-const connStr = process.env.SQLCONNSTR_DefaultConnection;
+// SQL config uses environment variable from Azure
+const sqlConfig = {
+  connectionString: process.env.SQLCONNSTR_DefaultConnection,
+  options: {
+    encrypt: true
+  }
+};
 
-async function testDb() {
+async function testDbQuery() {
   try {
-    if (!connStr) {
-      console.error("❌ ERROR: SQLCONNSTR_DefaultConnection NOT FOUND");
-      return;
-    }
+    const pool = await sql.connect(sqlConfig);
 
-    console.log("🔗 Using connection string:", connStr);
+    // Run a simple SQL query
+    const result = await pool.request().query("SELECT TOP 1 name FROM sys.tables");
 
-    const pool = await sql.connect({
-      connectionString: connStr,
-      options: { encrypt: true }
-    });
+    return {
+      success: true,
+      message: "SQL Query OK",
+      result: result.recordset
+    };
 
-    console.log("✅ Connected to SQL Database!");
   } catch (err) {
-    console.error("❌ SQL Connection Failed:", err);
+    return {
+      success: false,
+      message: "SQL Query FAILED",
+      error: err.message
+    };
   }
 }
 
-testDb();
+const server = http.createServer(async (req, res) => {
+  res.writeHead(200, { "Content-Type": "application/json" });
 
-// Create HTTP server
-const PORT = process.env.PORT || 8080;
+  const dbResult = await testDbQuery();
 
-const server = http.createServer((req, res) => {
-  res.writeHead(200, { "Content-Type": "text/plain" });
-  res.end("Hello from Azure App Service!");
+  res.end(JSON.stringify({
+    status: "App running",
+    db: dbResult
+  }, null, 2));
 });
 
-server.listen(PORT, () => console.log("🚀 Server running on port " + PORT));
+server.listen(process.env.PORT || 8080);
