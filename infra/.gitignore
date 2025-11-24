@@ -10,3 +10,6 @@ publishprofile.xml
 # Variable files
 *.tfvars
 *.tfvars.json
+
+# Node modules
+node_modules/
