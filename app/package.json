@@ -2,7 +2,11 @@
   "name": "helloapp",
   "version": "1.0.0",
   "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
   "dependencies": {
-    "mssql": "^12.1.0"
+    "express": "^5.1.0",
+    "mssql": "^12.1.1"
   }
 }

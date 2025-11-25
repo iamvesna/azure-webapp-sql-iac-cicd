@@ -1,4 +1,4 @@
-name: Deploy Node App to Azure WebApp (Staging Slot)
+name: Deploy Node App to Azure WebApp (Production)
 
 on:
   push:
@@ -22,16 +22,14 @@ jobs:
           cd app
           npm ci
 
-      - name: Create deployment package (correct path!)
+      - name: Create deployment package
         run: |
           cd app
-          zip -r ../app.zip .    # Creates /app.zip in project root
-          cd ..
+          zip -r ../app.zip .
 
-      - name: Deploy to Azure WebApp (Staging Slot)
+      - name: Deploy to Azure WebApp (Production)
         uses: azure/webapps-deploy@v3
         with:
-          app-name: app-azurewebapp123-dev
-          slot-name: "staging"
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_STAGING }}
+          app-name: app-azurewebapp123-dev    # <-- your real app name
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: app.zip

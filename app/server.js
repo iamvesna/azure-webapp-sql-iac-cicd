@@ -6,13 +6,12 @@ const port = process.env.PORT || 8080;
 
 const connectionString =
   process.env.SQLCONNSTR_DefaultConnection ||
-  process.env.sqlconnstr_defaultconnection ||
-  process.env.DEFAULTCONNECTION;
+  process.env.SQL_CONNECTION_STRING;
 
-console.log("Using SQL connection:", connectionString);
+console.log("SQL Connection:", connectionString);
 
 const config = {
-  connectionString: connectionString,
+  connectionString,
   options: {
     encrypt: true
   }
@@ -21,12 +20,11 @@ const config = {
 app.get('/', async (req, res) => {
   try {
     let pool = await sql.connect(config);
-    let result = await pool.request().query('SELECT GETDATE() AS CurrentTime');
-    res.send(`Connected to SQL! Server time: ${result.recordset[0].CurrentTime}`);
+    let result = await pool.request().query('SELECT GETDATE() AS now');
+    res.send("Connected! Server time: " + result.recordset[0].now);
   } catch (err) {
-    console.error("SQL Error:", err);
-    res.status(500).send("Failed to connect to SQL");
+    res.status(500).send("DB error: " + err.message);
   }
 });
 
-app.listen(port, () => console.log(`App running on port ${port}`));
+app.listen(port, () => console.log(`Running on ${port}`));
