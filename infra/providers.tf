@@ -9,17 +9,18 @@ terraform {
   }
 
   backend "azurerm" {
-    resource_group_name  = "rg-tfstate-shared"
-    storage_account_name = "tfstatewebapp12345"
+    resource_group_name  = "rg-tfstate-webapp-dev"
+    storage_account_name = "tfstateo7qcuh"
     container_name       = "tfstate"
-    key                  = "project1/dev.tfstate"
+    key                  = "project-webapp-dev/dev.tfstate"
   }
 }
 
 provider "azurerm" {
   features {}
 
-  subscription_id = "50431439-8ad0-487c-af3e-5cbc7bdf3318"
-  tenant_id       = "09b37f2d-cc3e-4bae-899a-fb3d45c10895"
+    subscription_id = "f8a946a6-285f-4c05-aacc-af58cf415cb5"
+    tenant_id       = "5829ce3d-d548-4479-a9b8-480c5b9cd398"
+
 
 }

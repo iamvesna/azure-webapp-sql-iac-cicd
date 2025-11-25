@@ -20,11 +20,9 @@ variable "tags" {
 
 variable "appi_cstr" {
   type = string
-  description = "Application Insights connection string"
 }
 
 variable "sql_connection_string" {
-  type        = string
-  sensitive   = true
-  description = "SQL DB connection string"
+  type      = string
+  sensitive = true
 }

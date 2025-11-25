@@ -8,25 +8,23 @@ variable "env" {
 
 variable "location" {
   type    = string
-  default = "westeurope"
+  default = "centralus"
 }
 
 variable "tags" {
   type = map(string)
-  default = {
-    owner       = "vesna"
-    environment = "dev"
-    app         = "azurewebapp"
-  }
 }
 
 variable "sql_admin_user" {
-  type        = string
-  description = "SQL Server admin username"
+  type = string
 }
 
 variable "sql_admin_password" {
+  type      = string
+  sensitive = true
+}
+
+variable "my_public_ip" {
   type        = string
-  sensitive   = true
-  description = "SQL Server admin password"
+  default     = "0.0.0.0"
 }

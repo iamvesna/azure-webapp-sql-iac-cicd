@@ -6,15 +6,23 @@ resource "azurerm_mssql_server" "sql" {
 
   administrator_login          = var.sql_admin_user
   administrator_login_password = var.sql_admin_password
+
+  tags = var.tags
+
 }
 
 resource "azurerm_mssql_database" "db" {
   name      = "db-${var.prefix}-${var.env}"
   server_id = azurerm_mssql_server.sql.id
-  sku_name  = "Basic"
+  sku_name  = "Basic"   
+
+  tags = var.tags
 }
 
-output "sql_connection_string" {
-  value     = "Server=tcp:${azurerm_mssql_server.sql.name}.database.windows.net,1433;Database=${azurerm_mssql_database.db.name};User ID=${var.sql_admin_user};Password=${var.sql_admin_password};Encrypt=true;"
-  sensitive = true
+# Allow ALL Azure resources, including App Service, to connect
+resource "azurerm_mssql_firewall_rule" "allow_azure_services" {
+  name                = "AllowAzureServices"
+  server_id           = azurerm_mssql_server.sql.id
+  start_ip_address    = "0.0.0.0"
+  end_ip_address      = "0.0.0.0"
 }
