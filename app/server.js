@@ -1,48 +1,32 @@
-﻿const http = require("http");
-const sql = require("mssql");
+﻿const express = require('express');
+const sql = require('mssql');
 
-async function testDbQuery() {
-  try {
-    // Azure injects connection strings using this variable name pattern:
-    // SQLCONNSTR_<NAME>
-    const conn = process.env.SQLCONNSTR_DefaultConnection;
+const app = express();
+const port = process.env.PORT || 8080;
 
-    if (!conn) {
-      return {
-        success: false,
-        message: "SQLCONNSTR_DefaultConnection NOT FOUND",
-        error: null
-      };
-    }
+const connectionString =
+  process.env.SQLCONNSTR_DefaultConnection ||
+  process.env.sqlconnstr_defaultconnection ||
+  process.env.DEFAULTCONNECTION;
 
-    // mssql supports "sql.connect(connectionString)" directly
-    const pool = await sql.connect(conn);
-    const result = await pool.request().query("SELECT TOP 1 name FROM sys.tables");
+console.log("Using SQL connection:", connectionString);
 
-    return {
-      success: true,
-      message: "SQL Query OK",
-      result: result.recordset
-    };
-
-  } catch (err) {
-    return {
-      success: false,
-      message: "SQL Query FAILED",
-      error: err.message
-    };
+const config = {
+  connectionString: connectionString,
+  options: {
+    encrypt: true
   }
-}
+};
 
-const server = http.createServer(async (req, res) => {
-  res.writeHead(200, { "Content-Type": "application/json" });
-
-  const dbResult = await testDbQuery();
-
-  res.end(JSON.stringify({
-    status: "App running",
-    db: dbResult
-  }, null, 2));
+app.get('/', async (req, res) => {
+  try {
+    let pool = await sql.connect(config);
+    let result = await pool.request().query('SELECT GETDATE() AS CurrentTime');
+    res.send(`Connected to SQL! Server time: ${result.recordset[0].CurrentTime}`);
+  } catch (err) {
+    console.error("SQL Error:", err);
+    res.status(500).send("Failed to connect to SQL");
+  }
 });
 
-server.listen(process.env.PORT || 8080);
+app.listen(port, () => console.log(`App running on port ${port}`));
