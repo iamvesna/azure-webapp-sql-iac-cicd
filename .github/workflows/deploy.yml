@@ -1,8 +1,9 @@
-name: Deploy Node App to Azure WebApp (Production)
+name: Deploy Hello App to Azure Web App
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   build-and-deploy:
@@ -12,24 +13,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '18'
 
       - name: Install dependencies
-        run: |
-          cd app
-          npm ci
+        run: npm install
 
-      - name: Create deployment package
-        run: |
-          cd app
-          zip -r ../app.zip .
+      - name: Zip artifact for deployment
+        run: zip -r release.zip . -x "*.git*"
 
-      - name: Deploy to Azure WebApp (Production)
+      - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: app-azurewebapp123-dev    # <-- your real app name
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          package: app.zip
+          app-name: YOUR_WEBAPP_NAME
+          publish-profile: ${{ secrets.YOUR_PUBLISH_PROFILE_SECRET }}
+          package: release.zip
