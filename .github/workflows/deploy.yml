@@ -18,13 +18,15 @@ jobs:
           node-version: '20'
 
       - name: Install dependencies
-        working-directory: app
-        run: npm ci
-
-      - name: Create deployment package
         run: |
           cd app
-          zip -r ../app.zip .
+          npm ci
+
+      - name: Create deployment package (correct path!)
+        run: |
+          cd app
+          zip -r ../app.zip .    # Creates /app.zip in project root
+          cd ..
 
       - name: Deploy to Azure WebApp (Staging Slot)
         uses: azure/webapps-deploy@v3
@@ -32,4 +34,4 @@ jobs:
           app-name: app-azurewebapp123-dev
           slot-name: "staging"
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_STAGING }}
-          package: ${{ github.workspace }}/app.zip
+          package: app.zip
