@@ -8,21 +8,19 @@ resource "azurerm_mssql_server" "sql" {
   administrator_login_password = var.sql_admin_password
 
   tags = var.tags
-
 }
 
 resource "azurerm_mssql_database" "db" {
   name      = "db-${var.prefix}-${var.env}"
   server_id = azurerm_mssql_server.sql.id
-  sku_name  = "Basic"   
-
-  tags = var.tags
+  sku_name  = "Basic"
+  tags      = var.tags
 }
 
-# Allow ALL Azure resources, including App Service, to connect
-resource "azurerm_mssql_firewall_rule" "allow_azure_services" {
-  name                = "AllowAzureServices"
-  server_id           = azurerm_mssql_server.sql.id
-  start_ip_address    = "0.0.0.0"
-  end_ip_address      = "0.0.0.0"
+resource "azurerm_mssql_firewall_rule" "allow_azure" {
+  name             = "AllowAzureServicesTF"
+  server_id        = azurerm_mssql_server.sql.id
+  start_ip_address = "0.0.0.0"
+  end_ip_address   = "0.0.0.0"
 }
+

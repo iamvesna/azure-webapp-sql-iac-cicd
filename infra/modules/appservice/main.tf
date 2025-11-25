@@ -3,9 +3,8 @@
   location            = var.location
   resource_group_name = var.rg_name
   os_type             = "Linux"
-  sku_name            = "S1"   # REQUIRED for deployment slots
-
-  tags = var.tags
+  sku_name            = "S1"
+  tags                = var.tags
 }
 
 resource "azurerm_linux_web_app" "app" {
@@ -29,11 +28,10 @@ resource "azurerm_linux_web_app" "app" {
     health_check_eviction_time_in_min = 2
   }
 
+  # Azure will automatically run npm install
   app_settings = {
     APPLICATIONINSIGHTS_CONNECTION_STRING = var.appi_cstr
-    WEBSITE_RUN_FROM_PACKAGE              = "1"
-
-    # Optional backup env var
+    SCM_DO_BUILD_DURING_DEPLOYMENT        = "true"
     SQL_CONNECTION_STRING                 = var.sql_connection_string
   }
 
@@ -46,7 +44,7 @@ resource "azurerm_linux_web_app" "app" {
   tags = var.tags
 }
 
-# Staging slot (blue/green deployment)
+# ---- STAGING SLOT -----
 resource "azurerm_linux_web_app_slot" "staging" {
   name           = "staging"
   app_service_id = azurerm_linux_web_app.app.id
@@ -66,7 +64,7 @@ resource "azurerm_linux_web_app_slot" "staging" {
 
   app_settings = {
     APPLICATIONINSIGHTS_CONNECTION_STRING = var.appi_cstr
-    WEBSITE_RUN_FROM_PACKAGE              = "1"
+    SCM_DO_BUILD_DURING_DEPLOYMENT        = "true"
     SQL_CONNECTION_STRING                 = var.sql_connection_string
   }
 
