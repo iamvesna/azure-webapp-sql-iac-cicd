@@ -17,30 +17,26 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Download Oryx CLI
-        run: |
-          ORYX_URL=$(curl -Ls -o /dev/null -w %{url_effective} https://github.com/microsoft/Oryx/releases/latest)
-          ORYX_VERSION=$(basename $ORYX_URL)
-          echo "Latest Oryx release: $ORYX_VERSION"
-
-          curl -L "https://github.com/microsoft/Oryx/releases/download/$ORYX_VERSION/oryx-cli-linux-x64.zip" -o oryx.zip
-          unzip oryx.zip -d oryx
-          sudo mv oryx/oryx /usr/local/bin/oryx
-          chmod +x /usr/local/bin/oryx
-          oryx --version
-
       - name: Install dependencies
         run: |
           cd app
-          npm install --production
+          npm ci --only=production
 
       - name: Build app using Oryx
         run: |
           oryx build app -o output
+          echo "Build completed"
+
+      # 🔥 IMPORTANT FIX: Zip the output folder
+      - name: Create deployment ZIP
+        run: |
+          cd output
+          zip -r ../deploy.zip .
+          cd ..
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: "app-azurewebapp123-dev"
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          package: output
+          package: deploy.zip
