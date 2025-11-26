@@ -18,16 +18,24 @@ jobs:
         with:
           node-version: 20
 
+      # Install dependencies inside /app
       - name: Install dependencies
         run: |
           cd app
           npm install --production
 
-      - name: Create build package
+      # Create a clean build folder with your app's ROOT FILES
+      - name: Prepare deployment package
         run: |
-          cd app
-          zip -r app.zip .
-          mv app.zip $GITHUB_WORKSPACE/
+          mkdir build
+          cp app/server.js build/
+          cp app/package.json build/
+
+      # Create ZIP WITHOUT an "app/" folder inside it
+      - name: Create ZIP package
+        run: |
+          cd build
+          zip -r ../app.zip .
 
       - name: Deploy to Azure WebApp
         uses: azure/webapps-deploy@v3
