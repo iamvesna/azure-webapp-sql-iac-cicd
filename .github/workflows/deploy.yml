@@ -20,6 +20,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd app
+<<<<<<< HEAD
           npm install --production
 
       - name: Create build package
@@ -27,10 +28,22 @@ jobs:
           cd app
           zip -r app.zip .
           mv app.zip $GITHUB_WORKSPACE/
+=======
+          npm install
+
+      - name: Create package
+        run: |
+          cd app
+          zip -r ../app.zip .
+>>>>>>> d094690a9e5aea57f8981026d9693a37316f389d
 
       - name: Deploy to Azure WebApp
         uses: azure/webapps-deploy@v3
         with:
           app-name: app-${{ vars.PREFIX }}-${{ vars.ENV }}
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+<<<<<<< HEAD
           package: "./app.zip"
+=======
+          package: app.zip
+>>>>>>> d094690a9e5aea57f8981026d9693a37316f389d
