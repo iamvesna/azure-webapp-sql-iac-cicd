@@ -16,18 +16,26 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: '20'
+
+      - name: Install Oryx
+        run: |
+          curl -L https://github.com/microsoft/Oryx/releases/latest/download/oryx-cli-linux-x64.tar.gz -o oryx.tar.gz
+          mkdir oryx
+          tar -xzf oryx.tar.gz -C oryx
+          sudo mv oryx/oryx /usr/local/bin/oryx
+          oryx --version
 
       - name: Install dependencies
         run: |
           cd app
-          npm install
+          npm install --production
 
-      - name: Build package using Oryx
+      - name: Build app using Oryx
         run: |
           oryx build app -o output
 
-      - name: Deploy to Azure Web App
+      - name: Deploy to Azure WebApp
         uses: azure/webapps-deploy@v3
         with:
           app-name: "app-azurewebapp123-dev"
