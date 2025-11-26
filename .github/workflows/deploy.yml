@@ -15,24 +15,17 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: 20
 
-      - name: Install dependencies
+      - name: Install dependencies (production only)
         run: |
           cd app
           npm ci --only=production
 
-      - name: Build app using Oryx
+      - name: Create ZIP for Azure
         run: |
-          oryx build app -o output
-          echo "Build completed"
-
-      # 🔥 IMPORTANT FIX: Zip the output folder
-      - name: Create deployment ZIP
-        run: |
-          cd output
+          cd app
           zip -r ../deploy.zip .
-          cd ..
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
