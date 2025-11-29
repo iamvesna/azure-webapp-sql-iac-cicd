@@ -4,8 +4,8 @@ resource "azurerm_mssql_server" "sql" {
   location                     = var.location
   version                      = "12.0"
 
-  administrator_login          = var.sql_admin_user
-  administrator_login_password = var.sql_admin_password
+  administrator_login          = data.azurerm_key_vault_secret.sql_admin_user.value
+  administrator_login_password = data.azurerm_key_vault_secret.sql_admin_password.value
 
   tags = var.tags
 }
@@ -17,10 +17,20 @@ resource "azurerm_mssql_database" "db" {
   tags      = var.tags
 }
 
-resource "azurerm_mssql_firewall_rule" "allow_azure" {
-  name             = "AllowAzureServicesTF"
+resource "azurerm_mssql_firewall_rule" "my_ip" {
+  name             = "AllowMyLocalIP"
   server_id        = azurerm_mssql_server.sql.id
-  start_ip_address = "0.0.0.0"
-  end_ip_address   = "0.0.0.0"
+  start_ip_address = var.my_public_ip
+  end_ip_address   = var.my_public_ip
 }
 
+
+data "azurerm_key_vault_secret" "sql_admin_user" {
+  name         = "sql-admin-user"
+  key_vault_id = var.key_vault_id
+}
+
+data "azurerm_key_vault_secret" "sql_admin_password" {
+  name         = "sql-admin-password"
+  key_vault_id = var.key_vault_id
+}

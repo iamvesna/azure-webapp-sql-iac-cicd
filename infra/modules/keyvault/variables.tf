@@ -7,24 +7,18 @@ variable "env" {
 }
 
 variable "location" {
-  type    = string
-  default = "centralus"
+  type = string
 }
 
-variable "tags" {
-  type = map(string)
+variable "resource_group_name" {
+  type = string
 }
 
 variable "sql_admin_user" {
-  type = string
+  type      = string
 }
 
 variable "sql_admin_password" {
   type      = string
   sensitive = true
-}
-
-variable "my_public_ip" {
-  type        = string
-  default     = "0.0.0.0"
 }

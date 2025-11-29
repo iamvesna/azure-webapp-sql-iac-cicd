@@ -18,16 +18,12 @@ variable "tags" {
   type = map(string)
 }
 
-variable "sql_admin_user" {
-  type = string
-}
-
-variable "sql_admin_password" {
-  type      = string
-  sensitive = true
-}
 
 variable "my_public_ip" {
   type        = string
   default     = "0.0.0.0"
+}
+
+variable "key_vault_id" {
+  type        = string
 }
