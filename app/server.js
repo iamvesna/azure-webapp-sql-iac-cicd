@@ -6,7 +6,6 @@ const sql = require('mssql');
 -------------------------------- */
 const appInsights = require("applicationinsights");
 
-// Enable Application Insights ONLY if the connection string is present
 if (process.env.APPLICATIONINSIGHTS_CONNECTION_STRING) {
   console.log("Application Insights initialized.");
 
@@ -31,31 +30,33 @@ if (process.env.APPLICATIONINSIGHTS_CONNECTION_STRING) {
 const app = express();
 const port = process.env.PORT || 8080;
 
-/* ---- NEW: Build SQL config from environment variables ---- */
+/* ---- Build SQL config from environment variables (FIXED) ---- */
 const sqlConfig = {
   server: process.env.SQL_SERVER + ".database.windows.net",
+  port: 1433,                 // ⭐ REQUIRED FOR AZURE SQL
   database: process.env.SQL_DATABASE,
   user: process.env.SQL_USER,
   password: process.env.SQL_PASSWORD,
   options: {
-    encrypt: true
+    encrypt: true,
+    enableArithAbort: true    // ⭐ prevents certain Azure SQL errors
   }
 };
 
-console.log("SQL Config Loaded:", {
-  server: sqlConfig.server,
-  database: sqlConfig.database,
-  user: sqlConfig.user
+// Helpful for debugging
+console.log("SQL ENV Loaded:", {
+  SQL_SERVER: process.env.SQL_SERVER,
+  SQL_DATABASE: process.env.SQL_DATABASE,
+  SQL_USER: process.env.SQL_USER,
+  SQL_PASSWORD: process.env.SQL_PASSWORD ? "Loaded" : "Missing"
 });
 
 /* -----------------------------
    ENDPOINTS
 -------------------------------- */
 
-// Simple health check endpoint
 app.get("/healthz", (req, res) => res.send("OK"));
 
-// Root endpoint that queries SQL
 app.get('/', async (req, res) => {
   try {
     let pool = await sql.connect(sqlConfig);
