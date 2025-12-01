@@ -26,3 +26,12 @@ variable "subscription_id" {
 variable "tenant_id" {
   type = string
 }
+
+variable "sql_admin_user" {
+  type = string
+}
+
+variable "sql_admin_password" {
+  type      = string
+  sensitive = true
+}

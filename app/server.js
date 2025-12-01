@@ -31,12 +31,26 @@ if (process.env.APPLICATIONINSIGHTS_CONNECTION_STRING) {
 const app = express();
 const port = process.env.PORT || 8080;
 
-// Azure injects connection strings as SQLCONNSTR_<name>
-const connectionString =
-  process.env.SQLCONNSTR_DefaultConnection ||
-  process.env.SQL_CONNECTION_STRING;
+/* ---- NEW: Build SQL config from environment variables ---- */
+const sqlConfig = {
+  server: process.env.SQL_SERVER + ".database.windows.net",
+  database: process.env.SQL_DATABASE,
+  user: process.env.SQL_USER,
+  password: process.env.SQL_PASSWORD,
+  options: {
+    encrypt: true
+  }
+};
 
-console.log("Using SQL connection:", connectionString);
+console.log("SQL Config Loaded:", {
+  server: sqlConfig.server,
+  database: sqlConfig.database,
+  user: sqlConfig.user
+});
+
+/* -----------------------------
+   ENDPOINTS
+-------------------------------- */
 
 // Simple health check endpoint
 app.get("/healthz", (req, res) => res.send("OK"));
@@ -44,7 +58,7 @@ app.get("/healthz", (req, res) => res.send("OK"));
 // Root endpoint that queries SQL
 app.get('/', async (req, res) => {
   try {
-    let pool = await sql.connect(connectionString);
+    let pool = await sql.connect(sqlConfig);
     let result = await pool.request().query('SELECT GETDATE() AS now');
 
     res.send("Connected to SQL! Server time: " + result.recordset[0].now);

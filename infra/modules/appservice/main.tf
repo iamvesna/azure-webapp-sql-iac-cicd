@@ -28,20 +28,16 @@ resource "azurerm_linux_web_app" "app" {
     health_check_eviction_time_in_min = 2
   }
 
-  # Azure will automatically run npm install
   app_settings = {
     APPLICATIONINSIGHTS_CONNECTION_STRING = var.appi_cstr
     SCM_DO_BUILD_DURING_DEPLOYMENT        = "true"
-    SQL_CONNECTION_STRING                 = var.sql_connection_string
-  }
 
-  connection_string {
-    name  = "DefaultConnection"
-    type  = "SQLAzure"
-    value = var.sql_connection_string
+    # CORRECT VARIABLE-BASED VALUES
+    SQL_SERVER   = var.sql_server_name
+    SQL_DATABASE = var.sql_database_name
+    SQL_USER     = var.sql_admin_user
+    SQL_PASSWORD = "@Microsoft.KeyVault(SecretUri=${var.sql_admin_password_secret_uri})"
   }
 
   tags = var.tags
 }
-
-

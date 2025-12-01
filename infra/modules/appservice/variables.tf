@@ -22,7 +22,19 @@ variable "appi_cstr" {
   type = string
 }
 
-variable "sql_connection_string" {
-  type      = string
-  sensitive = true
+
+variable "sql_server_name" {
+  type = string
+}
+
+variable "sql_database_name" {
+  type = string
+}
+
+variable "sql_admin_user" {
+  type = string
+}
+
+variable "sql_admin_password_secret_uri" {
+  type = string
 }

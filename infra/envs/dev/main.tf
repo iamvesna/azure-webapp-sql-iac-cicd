@@ -41,5 +41,20 @@ module "appservice" {
   location              = var.location
   tags                  = var.tags
   appi_cstr             = module.core.appi_cstr
-  sql_connection_string = module.sql.sql_connection_string
+
+  sql_server_name                = module.sql.sql_server_name
+  sql_database_name              = module.sql.sql_database_name
+  sql_admin_user                 = data.azurerm_key_vault_secret.sql_admin_user.value
+  sql_admin_password_secret_uri  = data.azurerm_key_vault_secret.sql_admin_password.id
+
+}
+
+data "azurerm_key_vault_secret" "sql_admin_user" {
+  name         = "sql-admin-user"
+  key_vault_id = module.keyvault.key_vault_id
+}
+
+data "azurerm_key_vault_secret" "sql_admin_password" {
+  name         = "sql-admin-password"
+  key_vault_id = module.keyvault.key_vault_id
 }
