@@ -31,6 +31,8 @@ module "sql" {
   depends_on = [
     module.keyvault
   ]
+
+   outbound_ips = module.appservice.outbound_ips
 }
 
 module "appservice" {

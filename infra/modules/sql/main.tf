@@ -24,6 +24,15 @@ resource "azurerm_mssql_firewall_rule" "my_ip" {
   end_ip_address   = var.my_public_ip
 }
 
+resource "azurerm_mssql_firewall_rule" "appservice_ips" {
+  for_each         = toset(var.outbound_ips)
+  name             = "AppService-${each.key}"
+  server_id        = azurerm_mssql_server.sql.id
+  start_ip_address = each.value
+  end_ip_address   = each.value
+}
+
+
 
 data "azurerm_key_vault_secret" "sql_admin_user" {
   name         = "sql-admin-user"

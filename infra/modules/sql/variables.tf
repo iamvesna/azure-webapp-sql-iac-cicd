@@ -27,3 +27,8 @@ variable "my_public_ip" {
 variable "key_vault_id" {
   type        = string
 }
+
+variable "outbound_ips" {
+  type = list(string)
+  default = []
+}
