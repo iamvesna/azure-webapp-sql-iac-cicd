@@ -30,29 +30,26 @@ if (process.env.APPLICATIONINSIGHTS_CONNECTION_STRING) {
 const app = express();
 const port = process.env.PORT || 8080;
 
-/* ---- Azure SQL TLS 1.2 FIX ---- */
+/* ---- Build SQL config from environment variables ---- */
 const sqlConfig = {
-  server: process.env.SQL_SERVER + ".database.windows.net",
-  port: 1433,
+  server: `${process.env.SQL_SERVER}.database.windows.net`,
   database: process.env.SQL_DATABASE,
   user: process.env.SQL_USER,
-  password: process.env.SQL_PASSWORD,
+  password: process.env.SQL_PASSWORD,  // Key Vault reference resolved by Azure!
+  port: 1433,
   options: {
     encrypt: true,
     enableArithAbort: true,
-    trustServerCertificate: false,
-    cryptoCredentialsDetails: {
-      minVersion: 'TLSv1.2'   // ⭐ REQUIRED FOR Node 20 + Azure SQL
-    }
+    trustServerCertificate: false
   }
 };
 
-/* Debug: Show loaded variables WITHOUT password */
-console.log("SQL ENV LOADED:", {
-  SQL_SERVER: process.env.SQL_SERVER,
-  SQL_DATABASE: process.env.SQL_DATABASE,
-  SQL_USER: process.env.SQL_USER,
-  SQL_PASSWORD: process.env.SQL_PASSWORD ? "Loaded" : "Missing"
+/* Debug info (safe) */
+console.log("SQL ENV Loaded:", {
+  SQL_SERVER: sqlConfig.server,
+  SQL_DATABASE: sqlConfig.database,
+  SQL_USER: sqlConfig.user,
+  SQL_PASSWORD: sqlConfig.password ? "Loaded" : "Missing"
 });
 
 /* -----------------------------
