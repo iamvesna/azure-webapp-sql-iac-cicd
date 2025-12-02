@@ -1,206 +1,173 @@
-﻿ #📘 Azure Web App + SQL + Key Vault + Monitoring + CI/CD (Terraform Project)
+﻿📘 Azure Web App + SQL + Key Vault + Monitoring + CI/CD
+Fully Automated Azure Cloud Environment (Terraform + GitHub Actions)
 
-This project demonstrates how to build a complete cloud application environment on Microsoft Azure using:
-
-Terraform (Infrastructure-as-Code)
-
-GitHub Actions (CI/CD pipeline)
-
-Azure App Service (Node.js Web App)
-
-Azure SQL Database
-
-Azure Key Vault (secure secrets)
-
-Application Insights & Log Analytics (monitoring)
+This project provisions a complete cloud application environment on Microsoft Azure.
+It includes a Web App, SQL Database, secure secret handling with Key Vault, full monitoring, and an automated CI/CD pipeline.
+All infrastructure is deployed and updated using Terraform, while every push to the main branch triggers an automated deployment via GitHub Actions.
 
 
-🎯 What This Project Demonstrates
 
-This project is meant to show:
+📂 Repository Structure
+azure-webapp-sql-iac-cicd/
+│
+├── app/                               # Node.js application
+│   ├── server.js                      # Express server (health endpoint + SQL connection)
+│   ├── package.json                   # App dependencies
+│   └── package-lock.json
+│
+├── .github/workflows/
+│   └── deploy.yml                     # CI/CD: build + deploy to Azure App Service
+│
+├── infra/                             # Terraform IaC
+│   ├── envs/
+│   │   └── dev/                       # Environment-specific configuration
+│   │       ├── main.tf                # Module composition
+│   │       ├── providers.tf           # Backend + provider settings
+│   │       ├── variables.tf           # Input variables
+│   │       ├── outputs.tf             # Outputs
+│   │       └── terraform.tfvars       # Dev environment values
+│   │
+│   └── modules/                       # Reusable Terraform modules
+│       ├── core/                      # RG + Log Analytics + App Insights
+│       ├── keyvault/                  # Key Vault + SQL admin secrets
+│       ├── sql/                       # SQL Server + DB + KV references
+│       └── appservice/                # Plan + Web App + identity + KV references
+│
+├── docs/
+│   ├── runbook.md                     # Step-by-step deployment guide
+│   ├── troubleshooting.md             # Identity + Key Vault issues
+│   ├── architecture-diagrams/         # PNG diagrams (modules + pipeline)
+│   └── screenshots/                   # Working application screenshots
+│
+└── README.md
 
-✔ 1. How to deploy a full Azure environment automatically
-
-Using Terraform modules and clean structure.
-
-✔ 2. How to host a real Node.js Web App in Azure App Service
-
-With health checks, SQL connection, and monitoring built in.
-
-✔ 3. How to store secrets securely using Azure Key Vault
-
-No secrets in code, repo, pipeline, or app settings.
-
-✔ 4. How to build an automated deployment workflow
-
-A GitHub Actions pipeline builds and deploys the application on every push.
-
-✔ 5. How to monitor an application end-to-end
-
-Using Application Insights + Log Analytics for logs, performance, and SQL dependencies.
 
 
-🏗️ What the Infrastructure Creates 
 
-All infrastructure is deployed through Terraform in a modular structure.
+🏗️ Infrastructure Overview
+
+All resources are deployed using Terraform in a clean, modular structure.
 
 1. Resource Group (foundation)
 
-- A container for all Azure resources.
+Central container for all Azure resources.
 
-2. App Service Plan (compute)
+2. App Service Plan (compute layer)
 
-- Defines the compute environment for running the Web App.
+Defines the compute capacity for hosting the Web App.
 
 3. Azure Web App (application layer)
 
-- Runs your Node.js backend, which:
+Runs a Node.js backend that:
 
-- exposes HTTP endpoints
+exposes HTTP endpoints
 
-- connects to Azure SQL Database
+connects to Azure SQL Database
 
-- retrieves secrets from Key Vault
+retrieves secrets from Key Vault via Key Vault References
 
-- sends telemetry to Application Insights
+sends telemetry to Application Insights
 
-- responds to health checks (/healthz)
-
-- This is the entry point users interact with.
+includes a /healthz endpoint
 
 4. Azure SQL Server + SQL Database (data layer)
 
-- Stores application data.
-Credentials are never stored in the application — only in Key Vault.
+A fully managed relational database.
+Credentials are never stored in code or app settings.
+Only in Azure Key Vault.
 
 5. Azure Key Vault (security layer)
 
 Stores:
 
-- SQL admin username
+SQL admin username
 
-- SQL admin password
+SQL admin password
 
-The Web App uses a Key Vault Reference, so Azure injects the password at runtime.
-This keeps the environment secure, clean, and compliant.
+The Web App accesses secrets using Managed Identity + Key Vault References.
 
 6. Application Insights (runtime monitoring)
 
-Captures:
+Provides automatic telemetry:
 
-- requests
+requests
 
-- logs
+SQL dependencies
 
-- SQL dependency calls
+exceptions
 
-- performance metrics
+performance metrics
 
-- exceptions
+live metrics
 
-- No manual instrumentation required.
+7. Log Analytics Workspace (log storage)
 
-7. Log Analytics Workspace (log storage & analysis)
-
-- Stores telemetry from Application Insights.
-Used for dashboards, KQL queries, alerts, and troubleshooting.
-
-🚀 How the Application Works 
-
-User makes a request
-→ The browser calls the Azure Web App URL.
-
-Web App runs the Node.js application
-→ Handles routes like / and /healthz.
-
-Web App retrieves SQL password from Key Vault
-→ Using a secure Key Vault Reference
-→ No secrets exposed to code or config.
-
-Web App connects to SQL Database
-→ Executes queries and returns results.
-
-Telemetry is automatically collected
-→ Application Insights logs all activity.
-→ Data flows into Log Analytics Workspace for analysis.
+Stores logs for dashboards, KQL queries, and troubleshooting.
 
 
-🔄 CI/CD Workflow (What Happens When You Push Code)
-✔ Push code to GitHub
 
-→ GitHub Actions pipeline starts.
 
-✔ Pipeline builds the Node.js application
+🔄 CI/CD Pipeline (GitHub Actions)
 
-→ Installs dependencies and creates a deployment package.
+Triggered by a push to main:
 
-✔ Pipeline deploys to Azure Web App
+1. Install Node.js dependencies
 
-→ The new version goes live automatically.
+2. Build + package the application
 
-This shows how modern cloud deployments work with zero manual steps.
+3. Deploy to Azure App Service
+
+4. Application updates automatically
+
+
 
 📐 Architecture Diagrams
 
-All diagrams for this project are located in:
+Available in /docs/architecture-diagrams/:
 
-/docs/architecture-diagrams/
+1. Modules Diagram
 
+Terraform modules and how they connect
 
-They include:
+2. Services & Pipeline Diagram
 
-1. Terraform Module Architecture
-
-Shows how:
-
-variables flow
-
-Terraform modules interact
-
-each module creates a part of the infrastructure
-
-2. Azure Services & Deployment Pipeline
-
-Shows the full system:
-
-GitHub → GitHub Actions → Azure Web App
-
-Web App → Key Vault → SQL DB
-
-Web App → Application Insights → Log Analytics
-
-You can open each diagram for a visual explanation of the architecture.
-
-🧭 Recreation of This Project
-
-The entire environment can be fully recreated.
-
-To keep this README simple and focused,
-all step-by-step recreation instructions are documented in:
-
-RUNBOOK.md
+CI/CD flow and how the Azure services interact
 
 
-This includes:
 
-- setup
+🧭 Environment Recreation
 
-- Terraform initialization
+The full environment can be recreated from scratch.
+Detailed instructions are documented in:
 
-- backend configuration
+📄 docs/runbook.md
 
-- deployment steps
+Includes:
 
-- pipeline setup
+setup
+
+Terraform backend configuration
+
+init, plan, apply steps
+
+CI/CD configuration
+
+troubleshooting
+
+
 
 ✅ Summary
 
-This project shows:
+This project demonstrates:
 
-- How to design a complete cloud architecture in Azure
+- A fully automated cloud architecture on Azure
 
-- How to deploy infrastructure with Terraform modules
+-  Modular Terraform IaC with environment separation
 
-- How to host, secure, and monitor a real Node.js application
+-  A real Node.js application deployed to App Service
 
-- How to automate deployments with GitHub Actions Azure Web App + SQL Infrastructure (Terraform + CI/CD + Monitoring) 
+-  Secure secret handling with Managed Identity + Key Vault
+
+-  Full observability using App Insights + Log Analytics
+
+-  Automated CI/CD deployments with GitHub Actions
