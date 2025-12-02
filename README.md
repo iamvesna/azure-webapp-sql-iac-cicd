@@ -6,9 +6,7 @@ It includes a Web App, SQL Database, secure secret handling with Key Vault, full
 All infrastructure is deployed and updated using Terraform, while every push to the main branch triggers an automated deployment via GitHub Actions.
 
 
-<p align="center">
-  <img src="docs/architecture-diagrams/repository-structure.PNG" width="700">
-</p>
+![Repository Structure](docs/architecture diagrams/repository-structure.PNG)
 
 
 
