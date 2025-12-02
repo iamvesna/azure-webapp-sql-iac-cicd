@@ -6,40 +6,9 @@ It includes a Web App, SQL Database, secure secret handling with Key Vault, full
 All infrastructure is deployed and updated using Terraform, while every push to the main branch triggers an automated deployment via GitHub Actions.
 
 
-
-📂 Repository Structure
-azure-webapp-sql-iac-cicd/
-│
-├── app/                               # Node.js application
-│   ├── server.js                      # Express server (health endpoint + SQL connection)
-│   ├── package.json                   # App dependencies
-│   └── package-lock.json
-│
-├── .github/workflows/
-│   └── deploy.yml                     # CI/CD: build + deploy to Azure App Service
-│
-├── infra/                             # Terraform IaC
-│   ├── envs/
-│   │   └── dev/                       # Environment-specific configuration
-│   │       ├── main.tf                # Module composition
-│   │       ├── providers.tf           # Backend + provider settings
-│   │       ├── variables.tf           # Input variables
-│   │       ├── outputs.tf             # Outputs
-│   │       └── terraform.tfvars       # Dev environment values
-│   │
-│   └── modules/                       # Reusable Terraform modules
-│       ├── core/                      # RG + Log Analytics + App Insights
-│       ├── keyvault/                  # Key Vault + SQL admin secrets
-│       ├── sql/                       # SQL Server + DB + KV references
-│       └── appservice/                # Plan + Web App + identity + KV references
-│
-├── docs/
-│   ├── runbook.md                     # Step-by-step deployment guide
-│   ├── troubleshooting.md             # Identity + Key Vault issues
-│   ├── architecture-diagrams/         # PNG diagrams (modules + pipeline)
-│   └── screenshots/                   # Working application screenshots
-│
-└── README.md
+<p align="center">
+  <img src="docs/architecture-diagrams/repository-structure.PNG" width="700">
+</p>
 
 
 
