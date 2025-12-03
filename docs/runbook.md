@@ -110,8 +110,8 @@ my_public_ip      = "<YOUR_PUBLIC_IP>"
 subscription_id   = "<YOUR_SUBSCRIPTION_ID>"
 tenant_id         = "<YOUR_TENANT_ID>"
 
-sql_admin_user      = "sqladmin"
-sql_admin_password  = "YourStrongPassword123!"
+sql_admin_user      = "YOUR_SQL_USER"
+sql_admin_password  = "YOUR_SQL_PASSWORD"
 
 
 
